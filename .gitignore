@@ -1,0 +1,19 @@
+# Cache do Python
+__pycache__/
+*.py[cod]
+
+# Ambiente virtual
+.venv/
+venv/
+
+# Banco vetorial do Chroma (recriado pelo ingest.py)
+db/
+
+# Segredos e configurações locais
+.env
+
+# Editor / sistema
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store

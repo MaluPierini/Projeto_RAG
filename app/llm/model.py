@@ -8,6 +8,7 @@ def get_llm():
         return ChatOllama(
             model=LLM_MODEL,
             temperature=0          # controla o quanto será criativa ou determinística
+            # num_ctx=8192,   cabe de 6 a 8 chunks + prompt + resposta 
         )
 
     raise ValueError("LLM provider inválido.")

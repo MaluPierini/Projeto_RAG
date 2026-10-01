@@ -1,4 +1,5 @@
 from app.rag.rag_chain import responder
+from app.config import LLM_MODEL
 
 
 def main():
@@ -15,7 +16,7 @@ def main():
 
         resposta = responder(pergunta)
 
-        print("modelo usado:" == LLM_MODEL)
+        print(f"\nmodelo usado: {LLM_MODEL}")
         print("\nResposta:")
         print(resposta)
         print("\n" + "-"*50 + "\n")
