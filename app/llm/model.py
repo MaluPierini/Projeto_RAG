@@ -2,12 +2,12 @@ from langchain_ollama import ChatOllama
 
 from app.config import LLM_PROVIDER, LLM_MODEL
 
-def get_llm():
+def get_llm(temperatura=0):
 
     if LLM_PROVIDER == "ollama":
         return ChatOllama(
             model=LLM_MODEL,
-            temperature=0          # controla o quanto será criativa ou determinística
+            temperature=temperatura          # controla o quanto será criativa ou determinística
             # num_ctx=8192,   cabe de 6 a 8 chunks + prompt + resposta 
         )
 
