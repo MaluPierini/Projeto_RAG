@@ -17,4 +17,4 @@ LLM_PROVIDER = "ollama"
 
 # LLM_MODEL = "phi3:latest"
 
-LLM_MODEL = "llama3.1:latest"
+LLM_MODEL = "phi3:latest"
