@@ -5,6 +5,7 @@ Métricas de avaliação do RAG, coletadas sem gabarito e sem LLM avaliador.
 - Recuperação: similaridade média dos K chunks e redundância entre eles
 - Consistência: similaridade entre respostas repetidas da mesma pergunta
 - Estruturais: comprimento da resposta e status da execução
+  (status "truncada" = a geração parou no limite LLM_MAX_TOKENS do config.py)
 """
 
 import time
@@ -48,7 +49,11 @@ def _gerar(pergunta, documentos, temperatura):
         "context": contexto,
     })
 
-    return get_llm(temperatura).invoke(prompt).content
+    mensagem = get_llm(temperatura).invoke(prompt)
+
+    # done_reason "length" = o Ollama parou por atingir o limite de tokens
+    cortada = mensagem.response_metadata.get("done_reason") == "length"
+    return mensagem.content, cortada
 
 
 def _redundancia(resultados):
@@ -76,7 +81,7 @@ def responder_com_metricas(pergunta, llm_nome="desconhecido"):
         # Tempo de geração e latência total (da pergunta até a resposta pronta)
         if documentos:
             inicio_geracao = time.perf_counter()
-            resposta = _gerar(pergunta, documentos, temperatura=0)
+            resposta, cortada = _gerar(pergunta, documentos, temperatura=0)
             fim = time.perf_counter()
 
             metricas["tempo_geracao"] = fim - inicio_geracao
@@ -106,7 +111,7 @@ def responder_com_metricas(pergunta, llm_nome="desconhecido"):
         metricas["erro"] = "resposta vazia"
         return None, metricas
 
-    metricas["status"] = "sucesso"
+    metricas["status"] = "truncada" if cortada else "sucesso"
     return resposta, metricas
 
 
@@ -126,7 +131,7 @@ def testar_consistencia(pergunta, n=3):
     respostas = []
     for _ in range(n):
         try:
-            resposta = _gerar(pergunta, documentos, TEMPERATURA_CONSISTENCIA)
+            resposta, _ = _gerar(pergunta, documentos, TEMPERATURA_CONSISTENCIA)
         except Exception:
             continue
 

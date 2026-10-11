@@ -3,19 +3,16 @@ Roda a avaliação SEM RAG (o LLM responde só com o que já sabe),
 com o modelo definido em LLM_MODEL no config.py.
 
 Uso (na raiz do projeto):
-    python -m app.evaluation.run_evaluation_sem_rag
+    python -m app.evaluation.run_evaluation_semRAG
 
-Usa as mesmas perguntas, a mesma amostra de consistência e as mesmas
-colunas da avaliação com RAG, para os CSVs poderem ser comparados direto.
+Usa as mesmas perguntas, a mesma amostra de consistência e os mesmos
+dois CSVs (métricas e respostas) da avaliação com RAG, para os resultados
+poderem ser comparados direto.
 As métricas de recuperação (tempo_busca, sim_media, redundancia, chunks)
 ficam vazias, porque não existe busca.
 """
 
-import csv
-import re
 import time
-from datetime import datetime
-from pathlib import Path
 
 import numpy as np
 from langchain_core.prompts import ChatPromptTemplate
@@ -26,6 +23,7 @@ from app.evaluation.metrics import (
     _similaridades_entre_pares,
 )
 from app.evaluation.perguntas import amostra_consistencia, perguntas
+from app.evaluation.resultados import criar_arquivos, salvar_linha
 from app.llm.model import get_llm
 
 # ATENÇÃO: deixe este texto igual ao PROMPT_TEMPLATE do app/rag/prompt.py,
@@ -42,26 +40,16 @@ Mantenha em inglês os termos técnicos que não têm tradução consagrada.
 """
 
 
-PASTA_RESULTADOS = Path(__file__).resolve().parents[2] / "resultados"
-
-# Mesmas colunas do run_evaluation.py, mais "rag" e "resposta"
-COLUNAS = [
-    "llm", "rag", "top_k", "chunk_size", "chunk_overlap",
-    "pergunta", "status",
-    "latencia_total", "tempo_busca", "tempo_geracao",
-    "sim_media", "redundancia", "n_chunks_recuperados", "n_chunks_usados",
-    "consistencia", "n_palavras",
-    "erro",
-    "resposta",
-]
-
-
 def _gerar(pergunta, temperatura):
     prompt = ChatPromptTemplate.from_template(PROMPT_SEM_RAG).invoke({
         "question": pergunta,
     })
 
-    return get_llm(temperatura).invoke(prompt).content
+    mensagem = get_llm(temperatura).invoke(prompt)
+
+    # done_reason "length" = o Ollama parou por atingir o limite de tokens
+    cortada = mensagem.response_metadata.get("done_reason") == "length"
+    return mensagem.content, cortada
 
 
 def responder_com_metricas(pergunta, llm_nome="desconhecido"):
@@ -69,7 +57,7 @@ def responder_com_metricas(pergunta, llm_nome="desconhecido"):
 
     try:
         inicio = time.perf_counter()
-        resposta = _gerar(pergunta, temperatura=0)
+        resposta, cortada = _gerar(pergunta, temperatura=0)
         fim = time.perf_counter()
 
         # Sem busca, a latência total é o próprio tempo de geração
@@ -88,7 +76,7 @@ def responder_com_metricas(pergunta, llm_nome="desconhecido"):
         metricas["erro"] = "resposta vazia"
         return None, metricas
 
-    metricas["status"] = "sucesso"
+    metricas["status"] = "truncada" if cortada else "sucesso"
     return resposta, metricas
 
 
@@ -100,7 +88,7 @@ def testar_consistencia(pergunta, n=3):
     respostas = []
     for _ in range(n):
         try:
-            resposta = _gerar(pergunta, TEMPERATURA_CONSISTENCIA)
+            resposta, _ = _gerar(pergunta, TEMPERATURA_CONSISTENCIA)
         except Exception:
             continue
 
@@ -113,26 +101,8 @@ def testar_consistencia(pergunta, n=3):
     return float(np.mean(_similaridades_entre_pares(respostas)))
 
 
-def caminho_csv():
-    # ":" (como em "llama3.1:latest") não é permitido em nomes de arquivo no Windows
-    modelo = re.sub(r"[^\w.-]", "-", LLM_MODEL)
-    data = datetime.now().strftime("%Y-%m-%d_%Hh%Mm%Ss")
-
-    return PASTA_RESULTADOS / f"{modelo}_semRAG_{data}.csv"
-
-
-def salvar_linha(caminho, linha):
-    # Abre e fecha o arquivo a cada pergunta, para a linha ser gravada no disco na hora
-    with open(caminho, "a", newline="", encoding="utf-8-sig") as f:
-        csv.DictWriter(f, fieldnames=COLUNAS, extrasaction="ignore").writerow(linha)
-
-
 def main():
-    PASTA_RESULTADOS.mkdir(exist_ok=True)
-
-    caminho = caminho_csv()
-    with open(caminho, "w", newline="", encoding="utf-8-sig") as f:
-        csv.DictWriter(f, fieldnames=COLUNAS).writeheader()
+    caminhos = criar_arquivos("semRAG")
 
     perguntas_consistencia = amostra_consistencia()
 
@@ -143,15 +113,17 @@ def main():
 
     for i, pergunta in enumerate(perguntas, start=1):
         resposta, metricas = responder_com_metricas(pergunta, llm_nome=LLM_MODEL)
+        metricas["id"] = i
         metricas["resposta"] = resposta
 
         if pergunta in perguntas_consistencia:
             metricas["consistencia"] = testar_consistencia(pergunta, n=3)
 
-        salvar_linha(caminho, metricas)
+        salvar_linha(caminhos, metricas)
         print(f"[{i}/{len(perguntas)}] {metricas['status']}: {pergunta[:50]}")
 
-    print(f"\nResultados salvos em {caminho}")
+    print(f"\nMétricas salvas em {caminhos['metricas']}")
+    print(f"Respostas salvas em {caminhos['respostas']}")
 
 
 if __name__ == "__main__":
