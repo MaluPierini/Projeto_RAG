@@ -34,6 +34,9 @@ def criar_banco(chunks, embeddings):
 
     Os IDs são determinísticos (arquivo + página + posição do chunk),
     então indexar o mesmo chunk duas vezes sobrescreve em vez de duplicar.
+
+    A gravação é feita em lotes porque o Chroma limita o número de
+    documentos por operação.
     """
 
     ids = [
@@ -43,8 +46,16 @@ def criar_banco(chunks, embeddings):
         for c in chunks
     ]
 
+    repetidos = len(ids) - len(set(ids))
+    if repetidos:
+        print(f"Aviso: {repetidos} trechos têm ID repetido e vão se sobrescrever no banco.")
+
     db = carregar_banco(embeddings)
-    db.add_documents(chunks, ids=ids)
+
+    tamanho_lote = 5000
+    for inicio in range(0, len(chunks), tamanho_lote):
+        fim = inicio + tamanho_lote
+        db.add_documents(chunks[inicio:fim], ids=ids[inicio:fim])
 
     return db
 
