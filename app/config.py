@@ -17,7 +17,7 @@ LLM_PROVIDER = "ollama"
 
 # LLM_MODEL = "phi3:latest"
 
-LLM_MODEL = "phi3:latest"
+LLM_MODEL = "gemma2:27b" 
 
 # Máximo de tokens gerados por resposta. Corta loops de geração antes de
 # estourarem a janela de contexto do Ollama (4096 tokens por padrão)

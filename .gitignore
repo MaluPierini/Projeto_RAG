@@ -17,3 +17,6 @@ db/
 .idea/
 Thumbs.db
 .DS_Store
+
+# Artigos científicos em PDF (não enviar ao GitHub)
+data/pdfs/

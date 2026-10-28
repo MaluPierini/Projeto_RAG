@@ -1,0 +1,36 @@
+﻿id,llm,rag,pergunta,status,resposta
+1,gemma2:latest,True,"Quais campos compõem o cabeçalho MBAP do Modbus TCP, qual o tamanho de cada um e para que servem?",sucesso,"O cabeçalho MBAP do Modbus TCP possui três campos: Transaction Identifier (2 bytes), Protocol Identifier (2 bytes) e Length (2 bytes). O Transaction Identifier identifica uma transação MODBUS Request/Response, sendo inicializado pelo cliente e copiado pelo servidor. O Protocol Identifier é 0x0000 e indica o protocolo MODBUS.  O Length informa o número de bytes seguintes no pacote. Falta informação sobre a função do campo Unit Identifier. 
+
+
+"
+2,gemma2:latest,True,"Em Modbus RTU com paridade, calcule os tempos t1.5 e t3.5 a 9600 bps e explique o papel de cada um. O que muda a 38400 bps?",sucesso,"Os tempos t1.5 e t3.5 em Modbus RTU a 9600 bps não são especificados nos trechos fornecidos.  O trecho menciona que, para taxas de baud acima de 19200 bps, valores fixos devem ser usados para os dois temporizadores, mas não especifica quais são esses valores. A partir dos trechos, sabemos que t1.5 representa o intervalo entre caracteres e que um intervalo superior a 1.5 vezes esse tempo torna o frame incompleto. Já t3.5 é o intervalo mínimo entre frames.  O trecho menciona que para taxas de baud até 19200 bps os tempos devem ser respeitados rigorosamente, mas não especifica quais valores usar. Falta informação sobre os valores específicos de t1.5 e t3.5 a 9600 bps e como eles mudam a 38400 bps.  
+
+
+"
+3,gemma2:latest,True,"Qual a diferença entre SecureChannel e Session no OPC UA, e em que ordem são estabelecidos?",sucesso,"SecureChannel é um canal de comunicação seguro entre um Client e um Server, enquanto Session é uma conexão estabelecida por aplicações OPC UA dentro do SecureChannel.  A ordem de estabelecimento é: primeiro o SecureChannel, depois a Session. O SecureChannel utiliza chaves para autenticar e criptografar mensagens, enquanto a Session permite que as aplicações troquem dados. A figura 8 ilustra essa relação. Falta especificar como a troca de ApplicationInstanceCertificates se relaciona com a criação da Session.  
+
+
+"
+4,gemma2:latest,True,"Uma Subscription tem intervalo de publicação de 1 s e keep-alive count 10. Qual o menor lifetime count permitido, e após quanto tempo sem Publish requests o servidor apaga a Subscription nesse caso? Se a fila de um MonitoredItem encher com discardOldest = TRUE, o que acontece?",sucesso,"O menor lifetime count permitido é três vezes o keep-alive count, ou seja, 3 * 10 = 30.  Após 30 ciclos de publicação sem Publish requests disponíveis, o servidor apagará a Subscription. Se a fila de um MonitoredItem encher com discardOldest = TRUE, os documentos fornecidos não especificam o que acontece.
+
+
+"
+5,gemma2:latest,True,"Como o CleanSession do MQTT 3.1.1 é representado no MQTT 5.0? Que configuração serve a um cliente com conectividade intermitente, e o que significa o valor 0xFFFFFFFF?",sucesso,"No MQTT 5.0, CleanSession é representado pelo campo Clean Start na mensagem CONNECT.  Para um cliente com conectividade intermitente, o valor 0 deve ser usado, pois indica que o servidor deve manter o estado da sessão após a desconexão e retomar a comunicação com base nesse estado. O valor 0xFFFFFFFF não está definido nos documentos fornecidos. Falta uma explicação sobre o significado do valor 0xFFFFFFFF no contexto de CleanSession.  
+
+
+"
+6,gemma2:latest,True,Uma rede em anel precisa de redundância de mídia. Compare MRP e MRPD e indique qual atende uma aplicação IRT que não tolera interrupção.,sucesso,"Tanto MRP quanto MRPD são conceitos de redundância de mídia para PROFINET. O MRP, descrito em IEC 62439-2, possui um tempo de reconfiguração inferior a 200 ms após uma falha, enquanto o MRPD (Media Redundancy for Planned Duplication) é descrito em IEC 61158 e permite a comutação suave entre caminhos de comunicação em caso de falha. Para uma aplicação IRT que não tolera interrupções, MRPD seria mais adequado pois garante a continuidade da comunicação durante falhas no sistema.  Os documentos fornecidos não mencionam detalhes sobre as aplicações específicas de cada protocolo. 
+
+
+"
+7,gemma2:latest,True,"Um fabricante quer desenvolver um dispositivo para controle de movimento isócrono. Que Conformance Class é necessária, que desempenho ela oferece e o que isso implica para o hardware da interface?",sucesso,"Para controle de movimento isócrono, é necessária a Conformance Class C (CC-C). Ela oferece hardware-supported bandwidth reservation and synchronization Isochronous Real-Time (IRT) communication. Isso implica que o hardware da interface precisa ser especial, com PROFINET ASICs ou FPGAs.  
+
+
+Os documentos fornecidos não contêm informação suficiente para responder a essa pergunta sobre os detalhes de desempenho específicos oferecidos pela CC-C. 
+"
+8,gemma2:latest,True,"Quais são as três classes de produtos EtherNet/IP quanto à capacidade de comunicação, e o que distingue cada uma?",sucesso,"EtherNet/IP possui três classes de produtos: Messaging Class, Adapter Class e Scanner Class. Cada classe suporta um conjunto básico de serviços de comunicação, mas pode oferecer outros serviços opcionais.  A Messaging Class suporta mensagens explícitas (conectadas ou não) enviadas para ou recebidas de todas as outras classes de produtos. A Adapter Class conecta dispositivos a redes EtherNet/IP e a outras redes. A Scanner Class permite que os dispositivos se comuniquem com outros dispositivos em uma rede EtherNet/IP.  
+
+Falta especificar o que cada classe oferece além dos serviços básicos. 
+
+
+"

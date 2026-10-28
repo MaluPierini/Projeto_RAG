@@ -34,10 +34,12 @@ Você é um especialista em protocolos de comunicação industrial (Modbus, PROF
 
 Pergunta: {question}
 
-Responda em português, em texto corrido. 
-Comece com uma ou duas frases que respondam diretamente à pergunta e depois detalhe a explicação. 
+Responda em português, em texto corrido.
+Seja direto: responda em um único parágrafo de no máximo 110 palavras (cerca de 5 frases), cobrindo todas as partes da pergunta.
+Priorize nomes, valores e números exatos e apresente as informações diretamente.
 Mantenha em inglês os termos técnicos que não têm tradução consagrada.
 """
+
 
 
 def _gerar(pergunta, temperatura):

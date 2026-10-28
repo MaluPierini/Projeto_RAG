@@ -1,0 +1,33 @@
+﻿id,llm,rag,pergunta,status,resposta
+1,gemma2:27b,True,"Quais campos compõem o cabeçalho MBAP do Modbus TCP, qual o tamanho de cada um e para que servem?",sucesso,"O cabeçalho MBAP do Modbus TCP é composto por três campos: Transaction Identifier (2 bytes), Protocol Identifier (2 bytes) e Length (2 bytes). O campo Transaction Identifier serve para identificar uma transação de solicitação/resposta MODBUS. O campo Protocol Identifier, com valor fixo 0x0000, indica que o protocolo utilizado é o MODBUS. O campo Length especifica o número de bytes seguintes ao cabeçalho MBAP. Os documentos fornecidos não contêm informação sobre a função de cada byte dentro dos campos. 
+
+
+"
+2,gemma2:27b,True,"Em Modbus RTU com paridade, calcule os tempos t1.5 e t3.5 a 9600 bps e explique o papel de cada um. O que muda a 38400 bps?",sucesso,"Em Modbus RTU com paridade, t1.5 é de no máximo 1.5 caracteres e t3.5 é de pelo menos 3.5 caracteres. Esses tempos são usados para garantir que a mensagem seja transmitida como um fluxo contínuo de caracteres. Se houver um intervalo silencioso maior que 1.5 caracteres entre dois caracteres, a mensagem será considerada incompleta e descartada pelo receptor. A 38400 bps, os valores fixos para t1.5 e t3.5 devem ser usados em vez dos tempos calculados. Os documentos fornecidos não especificam quais são esses valores fixos.  
+
+
+"
+3,gemma2:27b,True,"Qual a diferença entre SecureChannel e Session no OPC UA, e em que ordem são estabelecidos?",sucesso,"Em OPC UA, SecureChannel e Session são conceitos distintos, embora relacionados. Um SecureChannel é uma conexão lógica de longa duração entre um cliente e um servidor, que utiliza chaves compartilhadas para autenticar e criptografar mensagens. A criação de um SecureChannel precede a criação de uma Session. Uma vez estabelecido o SecureChannel, as aplicações OPC UA podem então criar uma Session, que permite a troca de dados entre cliente e servidor.  Uma única Session só pode ser acessada através de um único SecureChannel. Os documentos fornecidos não explicam como a aplicação OPC UA determina qual SecureChannel está associado a cada mensagem. 
+
+
+"
+4,gemma2:27b,True,"Uma Subscription tem intervalo de publicação de 1 s e keep-alive count 10. Qual o menor lifetime count permitido, e após quanto tempo sem Publish requests o servidor apaga a Subscription nesse caso? Se a fila de um MonitoredItem encher com discardOldest = TRUE, o que acontece?",sucesso,"O menor lifetime count permitido é três vezes o keep-alive count, então nesse caso seria 3 * 10 = 30. A Subscription será apagada pelo servidor após 30 ciclos de publicação sem Publish requests disponíveis. Se a fila de um MonitoredItem com discardOldest = TRUE encher, os dados mais antigos serão descartados para dar espaço aos novos. Os documentos fornecidos não contêm informação suficiente para responder o que acontece com esses dados descartados.  
+
+
+"
+5,gemma2:27b,True,"Como o CleanSession do MQTT 3.1.1 é representado no MQTT 5.0? Que configuração serve a um cliente com conectividade intermitente, e o que significa o valor 0xFFFFFFFF?",sucesso,"Em MQTT 5.0, o CleanSession é representado pelo bit de posição 1 no byte Connect Flags, chamado ""Clean Start"". Para um cliente com conectividade intermitente, a configuração ideal é ""Clean Start"" definido como 0. Isso permite que o servidor mantenha o estado da sessão mesmo após desconexões, garantindo que mensagens QoS 1 e 2 sejam armazenadas e entregues ao reconectar. O valor 0xFFFFFFFF não é mencionado nos documentos fornecidos em relação à configuração de CleanSession.  
+
+
+"
+6,gemma2:27b,True,Uma rede em anel precisa de redundância de mídia. Compare MRP e MRPD e indique qual atende uma aplicação IRT que não tolera interrupção.,sucesso,"Tanto MRP quanto MRPD são mecanismos de redundância de mídia para redes em anel, mas MRPD é específico para aplicações IRT que exigem alta disponibilidade. MRP, descrito na norma IEC 62439-2, tem um tempo de reconexão típico inferior a 200 ms e utiliza um Media Redundancy Manager (MRM) para monitorar a integridade do anel e prevenir a circulação de frames em caso de falha. MRPD, por outro lado, descrito na norma IEC 61158, permite a troca suave entre caminhos de comunicação em caso de falha, enviando dados em ambas as direções do anel.  Portanto, MRPD é mais adequado para aplicações IRT que não toleram interrupções. Os documentos fornecidos não especificam se MRP pode ser usado com IRT. 
+
+
+"
+7,gemma2:27b,True,"Um fabricante quer desenvolver um dispositivo para controle de movimento isócrono. Que Conformance Class é necessária, que desempenho ela oferece e o que isso implica para o hardware da interface?",sucesso,"Para controle de movimento isócrono, é necessária a Conformance Class C (CC-C). Ela oferece as funções básicas para dispositivos com reserva de largura de banda e sincronização hardware suportadas, permitindo comunicação Isochronous Real-Time (IRT). Isso implica que o hardware da interface deve ser um ASIC ou FPGA com suporte IRT e um switch compatível com IRT. Os documentos fornecidos não contêm informações sobre os requisitos específicos de desempenho para controle de movimento isócrono. 
+
+
+"
+8,gemma2:27b,True,"Quais são as três classes de produtos EtherNet/IP quanto à capacidade de comunicação, e o que distingue cada uma?",sucesso,"EtherNet/IP define três classes de produtos com base nas capacidades de comunicação de rede: Messaging Class, Adapter Class e Scanner Class. Cada classe suporta um conjunto básico de serviços de comunicação, mas pode fornecer outros serviços opcionais. Produtos da Messaging Class suportam mensagens explícitas (conectadas ou não conectadas) enviadas para ou recebidas de todas as outras classes de produtos. Os documentos fornecidos não contêm informação suficiente para descrever as Adapter Class e Scanner Class. 
+
+
+"
